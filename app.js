@@ -1,5 +1,5 @@
-const THREE_MODULE_URL = "/node_modules/three/build/three.module.js";
-const HLS_MODULE_URL = "/node_modules/hls.js/dist/hls.mjs";
+const THREE_MODULE_URL = "node_modules/three/build/three.module.js";
+const HLS_MODULE_URL = "node_modules/hls.js/dist/hls.mjs";
 const SANITY_PROJECT_ID = "u7lvkmbp";
 const SANITY_DATASET = "production";
 const HOME_INITIAL_SCROLL_OFFSET = 2.15;
@@ -142,15 +142,15 @@ const POST_FRAGMENT_SHADER = `
 `;
 
 const referenceMedia = {
-  pathsOfLife: "/assets/reference/paths-of-life.png",
-  disease: "/assets/reference/the-disease-spread-on-tiktok.png",
-  psychedelics: "/assets/reference/ah-psychedelics.png",
-  thought: "/assets/reference/thought.png",
-  jupiter: "/assets/reference/jupiter.png",
-  chromatik: "/assets/reference/chromatik.png",
-  digitalTravel: "/assets/reference/digital-travel.png",
-  mercedesAmg: "/assets/reference/mercedes-amg.png",
-  purityRevealed: "/assets/reference/the-purity-revealed.png"
+  pathsOfLife: "assets/reference/paths-of-life.png",
+  disease: "assets/reference/the-disease-spread-on-tiktok.png",
+  psychedelics: "assets/reference/ah-psychedelics.png",
+  thought: "assets/reference/thought.png",
+  jupiter: "assets/reference/jupiter.png",
+  chromatik: "assets/reference/chromatik.png",
+  digitalTravel: "assets/reference/digital-travel.png",
+  mercedesAmg: "assets/reference/mercedes-amg.png",
+  purityRevealed: "assets/reference/the-purity-revealed.png"
 };
 
 function getSanityImageUrl(assetRef, width = 1600) {
@@ -185,7 +185,7 @@ const siteProfile = {
   email: "pertantpacome@gmail.com",
   showreelUrl: "https://www.behance.net/gallery/202093435/Showreel-2024",
   showreelPlaybackId: "ycc6bXk6hOWxGnyb6F3wvUxPPLiDML00P9OPkYMjuSN8",
-  showreelCover: "/assets/reference/showreel-cover.png",
+  showreelCover: "assets/reference/showreel-cover.png",
   socials: [
     { label: "Instagram", short: "ig", url: "https://www.instagram.com" },
     { label: "X / Twitter", short: "x", url: "https://www.x.com/pacomepertant" },
@@ -391,7 +391,7 @@ function clamp(value, min, max) {
 }
 
 function buildProjectPath(slug) {
-  return `/projects/${slug}`;
+  return `project.html?slug=${encodeURIComponent(slug)}`;
 }
 
 function getCurrentProjectSlug() {
@@ -442,10 +442,6 @@ function getProjectStageTextureUrl(project, width = 768) {
     if (url.hostname === "cdn.sanity.io") {
       url.searchParams.set("w", String(width));
       url.searchParams.set("auto", "format");
-    }
-
-    if (url.origin !== window.location.origin) {
-      return `${window.location.origin}/__asset?url=${encodeURIComponent(url.href)}`;
     }
 
     return url.href;
@@ -1336,7 +1332,7 @@ async function renderProjectPage() {
 
   root.innerHTML = `
     <article class="project-card">
-      <a class="project-close" href="/" aria-label="Back to home">
+      <a class="project-close" href="./" aria-label="Back to home">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M7 7l10 10"></path>
           <path d="M17 7L7 17"></path>
@@ -1366,7 +1362,7 @@ async function renderProjectPage() {
 
     <section class="project-next">
       <div class="project-next-inner">
-        <a class="project-next-back" href="/">back to home</a>
+        <a class="project-next-back" href="./">back to home</a>
 
         <a class="project-next-figure" href="${buildProjectPath(nextProject.slug)}">
           <img src="${getProjectThumbnail(nextProject)}" alt="${nextProject.title}">

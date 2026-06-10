@@ -1,0 +1,17 @@
+<svg width="1200" height="760" viewBox="0 0 1200 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ribbon-bg" x1="956" y1="66" x2="306" y2="618" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1D2AFF"/>
+      <stop offset="1" stop-color="#000612"/>
+    </linearGradient>
+    <linearGradient id="ribbon" x1="340" y1="122" x2="970" y2="336" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#15FFD0"/>
+      <stop offset="0.48" stop-color="#43A4FF"/>
+      <stop offset="1" stop-color="#996CFF"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="760" rx="42" fill="url(#ribbon-bg)"/>
+  <path d="M262 150C386 126 456 150 538 210C620 270 700 346 850 366C958 382 1042 362 1128 318L1066 236C996 270 930 284 844 270C734 252 648 194 564 136C480 78 370 66 236 102L262 150Z" fill="url(#ribbon)" fill-opacity="0.96"/>
+  <path d="M980 86C1016 52 1044 36 1088 24C1116 16 1150 10 1178 8L1126 120C1090 122 1068 130 1040 146C996 170 968 202 942 244L888 216C912 164 940 126 980 86Z" fill="#40FFF1" fill-opacity="0.66"/>
+  <path d="M834 470C886 434 944 410 1022 404" stroke="#FFF" stroke-opacity="0.18" stroke-width="8" stroke-linecap="round"/>
+</svg>

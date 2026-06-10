@@ -1,0 +1,9 @@
+{
+  "name": "spiral-portfolio-study",
+  "private": true,
+  "version": "0.1.0",
+  "dependencies": {
+    "hls.js": "^1.6.16",
+    "three": "0.167.1"
+  }
+}

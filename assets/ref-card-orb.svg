@@ -1,0 +1,29 @@
+<svg width="1200" height="760" viewBox="0 0 1200 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="orb-bg" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(598 420) rotate(90) scale(318 500)">
+      <stop stop-color="#6E43FF"/>
+      <stop offset="0.58" stop-color="#1B1953"/>
+      <stop offset="1" stop-color="#07102B"/>
+    </radialGradient>
+    <radialGradient id="orb-core" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(612 378) rotate(90) scale(112 112)">
+      <stop stop-color="#B5FF93"/>
+      <stop offset="0.48" stop-color="#67F2E0"/>
+      <stop offset="1" stop-color="#6D51FF"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="760" rx="42" fill="url(#orb-bg)"/>
+  <circle cx="612" cy="378" r="166" stroke="#9C5AFF" stroke-opacity="0.44" stroke-width="6"/>
+  <circle cx="612" cy="378" r="206" stroke="#FFF" stroke-opacity="0.14" stroke-width="3"/>
+  <circle cx="612" cy="378" r="86" fill="url(#orb-core)"/>
+  <rect x="502" y="328" width="126" height="100" rx="16" fill="#9BE9CC"/>
+  <rect x="644" y="328" width="126" height="100" rx="16" fill="#D8D1FF"/>
+  <circle cx="548" cy="350" r="12" fill="#6E43FF"/>
+  <circle cx="726" cy="350" r="12" fill="#6E43FF"/>
+  <path d="M562 380L592 356L612 380L570 410" fill="#4C52FF"/>
+  <path d="M700 352H738V390H700V352Z" fill="#FFDD6F"/>
+  <path d="M722 342L734 364L758 366L740 382L744 406L722 394L700 406L704 382L686 366L710 364L722 342Z" fill="#FF5FC7"/>
+  <path d="M446 314H488" stroke="#B3FE95" stroke-width="10" stroke-linecap="round"/>
+  <path d="M736 314H778" stroke="#F1A1FF" stroke-width="10" stroke-linecap="round"/>
+  <path d="M444 446H486" stroke="#79E9FF" stroke-width="10" stroke-linecap="round"/>
+  <path d="M740 446H782" stroke="#86FFA7" stroke-width="10" stroke-linecap="round"/>
+</svg>

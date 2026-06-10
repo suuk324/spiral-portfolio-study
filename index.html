@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Study</title>
+  <meta name="description" content="Reference-style portfolio study with an immersive floating stage, large-list browsing mode, and reusable project templates.">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body class="page-home mode-spiral is-loading">
+  <div class="site-shell">
+    <div class="background-field" aria-hidden="true">
+      <div class="background-grid"></div>
+      <div class="background-glow glow-left"></div>
+      <div class="background-glow glow-right"></div>
+      <div class="background-vignette"></div>
+    </div>
+
+    <header class="site-header">
+      <a class="logo-badge" href="/" aria-label="Back to home">
+        <span class="logo-orb"></span>
+        <span class="logo-smile"></span>
+      </a>
+
+      <div class="view-toggle" role="tablist" aria-label="Browse mode">
+        <button class="toggle-button is-active" id="spiral-toggle" type="button" role="tab" aria-selected="true">
+          <span>spiral</span>
+          <span>spiral</span>
+        </button>
+        <span class="toggle-dot" aria-hidden="true"></span>
+        <button class="toggle-button" id="list-toggle" type="button" role="tab" aria-selected="false">
+          <span>list</span>
+          <span>list</span>
+        </button>
+      </div>
+
+      <div class="menu-wrap">
+        <button class="menu-button" id="menu-button" type="button" aria-expanded="false" aria-controls="menu-panel">
+          <span class="menu-text">menu</span>
+          <span class="menu-dot" aria-hidden="true"></span>
+        </button>
+
+        <aside class="menu-panel" id="menu-panel" aria-hidden="true">
+          <button class="menu-close" id="menu-close" type="button" aria-label="Close menu">
+            <span>close</span>
+          </button>
+
+          <nav class="menu-nav" aria-label="Primary">
+            <a href="/">works</a>
+            <a href="/about/">about</a>
+            <a href="mailto:pertantpacome@gmail.com">contact</a>
+          </nav>
+
+          <div class="menu-footer">
+            <a class="menu-mail" href="mailto:pertantpacome@gmail.com">pertantpacome@gmail.com</a>
+
+            <div class="menu-socials" aria-label="Social links">
+              <a href="https://www.x.com/pacomepertant" target="_blank" rel="noopener noreferrer" aria-label="X / Twitter">x</a>
+              <a href="https://www.behance.net/pacomepertant" target="_blank" rel="noopener noreferrer" aria-label="Behance">be</a>
+              <a href="https://www.linkedin.com/in/pac%C3%B4me-pertant-b4437126b/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">in</a>
+              <a href="https://www.instagram.com/pacomepertant" target="_blank" rel="noopener noreferrer" aria-label="Instagram">ig</a>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <main class="home-stage">
+      <section class="spiral-stage" aria-label="Floating project stage">
+        <div class="card-scene" id="card-scene"></div>
+      </section>
+
+      <section class="list-stage" aria-label="Project title list">
+        <div class="list-stack" id="list-stack"></div>
+        <div class="list-preview" id="list-preview" aria-hidden="true">
+          <div class="list-preview-frame">
+            <img id="list-preview-image" src="/assets/reference/the-disease-spread-on-tiktok.png" alt="">
+          </div>
+          <p class="list-preview-meta" id="list-preview-meta"></p>
+        </div>
+      </section>
+    </main>
+
+    <a class="showreel-card" href="https://www.behance.net/gallery/202093435/Showreel-2024" target="_blank" rel="noopener noreferrer" aria-label="Open showreel">
+      <div class="showreel-frame">
+        <img src="/assets/reference/showreel-cover.png" alt="Showreel cover">
+      </div>
+      <svg class="showreel-marquee" viewBox="0 0 320 210" aria-hidden="true">
+        <defs>
+          <path id="showreel-path" d="M30 189h228c20 0 34-15 34-34V39c0-19-14-34-34-34H30C11 5-3 20-3 39v116c0 19 14 34 33 34Z"></path>
+        </defs>
+        <text>
+          <textPath href="#showreel-path" startOffset="0%">
+            showreel • 2025 • showreel • 2025 • showreel • 2025 •
+          </textPath>
+        </text>
+      </svg>
+    </a>
+
+    <div class="utility-stack" aria-hidden="true">
+      <button class="utility-pill">Ai</button>
+      <button class="utility-pill utility-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M7 7.5h10"></path>
+          <path d="M7 12h10"></path>
+          <path d="M7 16.5h6"></path>
+          <path d="M4.5 4.5h15v15l-3-1.5-4.5 1.5-4.5-1.5-3 1.5Z"></path>
+        </svg>
+      </button>
+    </div>
+
+    <button class="sound-button" id="sound-button" type="button" aria-pressed="false" aria-label="Toggle sound">
+      <span class="sound-background"></span>
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M5 9v6h4l5 4V5L9 9H5Z"></path>
+        <path d="M17.5 9.5c1.6 1.4 1.6 3.6 0 5"></path>
+        <path d="M19.75 7c3 2.6 3 7.4 0 10"></path>
+      </svg>
+    </button>
+
+    <div class="loader" id="loader">
+      <div class="loader-inner">
+        <div class="loader-badge" aria-hidden="true">
+          <span class="logo-orb"></span>
+          <span class="logo-smile"></span>
+        </div>
+        <p class="loader-copy">motion &amp; sound designer based in paris</p>
+
+        <div class="loader-actions">
+          <button class="loader-enter" id="enter-with-sound" type="button">enter with sound</button>
+          <button class="loader-skip" id="enter-without-sound" type="button">enter without sound</button>
+        </div>
+      </div>
+
+      <p class="loader-progress"><span id="loader-progress">000</span> / 100</p>
+    </div>
+  </div>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

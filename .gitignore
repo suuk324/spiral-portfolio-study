@@ -1,0 +1,10 @@
+node_modules/
+.artifacts/
+.codex-research/
+.codex-*.png
+.http-server*.log
+chrome-about-dom.txt
+-
+*.log
+.DS_Store
+Thumbs.db

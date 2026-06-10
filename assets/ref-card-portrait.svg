@@ -1,0 +1,26 @@
+<svg width="1200" height="760" viewBox="0 0 1200 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="portrait-film" x1="232" y1="128" x2="1048" y2="624" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFD15B"/>
+      <stop offset="0.5" stop-color="#F7F0E4"/>
+      <stop offset="1" stop-color="#BFC6D9"/>
+    </linearGradient>
+    <filter id="portrait-blur" x="84" y="104" width="598" height="622" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="16"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="760" rx="42" fill="#F3F0EA"/>
+  <rect width="1200" height="760" rx="42" fill="url(#portrait-film)"/>
+  <path d="M0 0H632L560 760H0V0Z" fill="#FFD260" fill-opacity="0.92"/>
+  <path d="M696 0H1200V760H624L696 0Z" fill="#ECEEF5" fill-opacity="0.88"/>
+  <path d="M950 76C990 164 1062 226 1200 252V0H1010L950 76Z" fill="#D5D9E6"/>
+  <g filter="url(#portrait-blur)">
+    <path d="M164 618C178 514 212 440 276 388C326 346 392 328 470 338C528 346 576 378 620 430V704H164V618Z" fill="#5B2516" fill-opacity="0.88"/>
+    <rect x="180" y="442" width="276" height="210" rx="22" fill="#210D0A" fill-opacity="0.96"/>
+    <path d="M194 450C236 388 288 350 360 334C420 320 478 322 542 342" stroke="#7F583A" stroke-width="20" stroke-linecap="round"/>
+  </g>
+  <rect x="118" y="454" width="292" height="200" rx="18" fill="#2A120E"/>
+  <path d="M118 482C154 422 206 376 280 342C334 318 394 310 460 318" stroke="#6B4A2F" stroke-width="18" stroke-linecap="round"/>
+  <circle cx="914" cy="124" r="124" fill="#FFFFFF" fill-opacity="0.18"/>
+  <circle cx="1032" cy="204" r="78" fill="#C9D0E0" fill-opacity="0.42"/>
+</svg>

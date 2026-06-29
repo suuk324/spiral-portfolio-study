@@ -1,4 +1,6 @@
 node_modules/
+dist/
+pages-preview-root/
 .artifacts/
 .codex-research/
 .codex-*.png

@@ -1,5 +1,15 @@
-const THREE_MODULE_URL = "node_modules/three/build/three.module.js";
-const HLS_MODULE_URL = "node_modules/hls.js/dist/hls.mjs";
+const SITE_ROOT_URL = new URL("./", import.meta.url);
+
+function resolveSiteUrl(path = "") {
+  return new URL(String(path).replace(/^\/+/, ""), SITE_ROOT_URL).toString();
+}
+
+function resolveSitePath(path = "") {
+  return new URL(String(path).replace(/^\/+/, ""), SITE_ROOT_URL).pathname;
+}
+
+const THREE_MODULE_URL = resolveSiteUrl("node_modules/three/build/three.module.js");
+const HLS_MODULE_URL = resolveSiteUrl("node_modules/hls.js/dist/hls.mjs");
 const SANITY_PROJECT_ID = "u7lvkmbp";
 const SANITY_DATASET = "production";
 const HOME_INITIAL_SCROLL_OFFSET = 2.15;
@@ -15,6 +25,9 @@ const HOME_BACK_LIFT = 0.018;
 const HOME_POST_GAMMA = 0.92;
 const HOME_POST_LIFT = 0.024;
 const STAGE_LOOP_COPIES = 2;
+const HOME_MAX_PIXEL_RATIO = 2.25;
+const HOME_MOBILE_MAX_PIXEL_RATIO = 2;
+const HOME_RENDER_TARGET_SAMPLES = 4;
 const PLANE_VERTEX_SHADER = `
   uniform float uScrollSpeed;
   varying vec2 vUv;
@@ -98,7 +111,8 @@ const PLANE_FRAGMENT_SHADER = `
     vec2 revealSize = vec2(reveal);
     float radius = 0.05 * reveal;
     float sdf = roundedRectSDF(vUv, revealSize, radius);
-    float alpha = 1.0 - smoothstep(0.0, 0.002, sdf);
+    float edgeSoftness = max(fwidth(sdf) * 2.5, 0.004);
+    float alpha = 1.0 - smoothstep(-edgeSoftness, edgeSoftness, sdf);
     alpha *= smoothstep(0.1, 1.0, uRevealProgress);
 
     gl_FragColor = vec4(color.rgb, alpha);
@@ -141,16 +155,76 @@ const POST_FRAGMENT_SHADER = `
   }
 `;
 
+const userImages = [
+  resolveSiteUrl("assets/user-images/optimized/user-01.webp"),
+  resolveSiteUrl("assets/user-images/optimized/user-02.webp"),
+  resolveSiteUrl("assets/user-images/optimized/user-03.webp"),
+  resolveSiteUrl("assets/user-images/optimized/user-04.webp"),
+  resolveSiteUrl("assets/user-images/optimized/user-05.webp"),
+  resolveSiteUrl("assets/user-images/optimized/user-06.webp"),
+  resolveSiteUrl("assets/user-images/optimized/user-07.webp"),
+  resolveSiteUrl("assets/user-images/optimized/user-08.webp"),
+  resolveSiteUrl("assets/user-images/optimized/user-09.webp"),
+  resolveSiteUrl("assets/user-images/optimized/user-10.webp"),
+  resolveSiteUrl("assets/user-images/optimized/user-11.webp"),
+  resolveSiteUrl("assets/user-images/optimized/user-12.webp"),
+  resolveSiteUrl("assets/user-images/optimized/user-13.webp"),
+  resolveSiteUrl("assets/user-images/optimized/user-14.webp"),
+];
+
 const referenceMedia = {
-  pathsOfLife: "assets/reference/paths-of-life.png",
-  disease: "assets/reference/the-disease-spread-on-tiktok.png",
-  psychedelics: "assets/reference/ah-psychedelics.png",
-  thought: "assets/reference/thought.png",
-  jupiter: "assets/reference/jupiter.png",
-  chromatik: "assets/reference/chromatik.png",
-  digitalTravel: "assets/reference/digital-travel.png",
-  mercedesAmg: "assets/reference/mercedes-amg.png",
-  purityRevealed: "assets/reference/the-purity-revealed.png"
+  pathsOfLife: userImages[0],
+  disease: userImages[1],
+  psychedelics: userImages[2],
+  thought: userImages[3],
+  jupiter: userImages[4],
+  chromatik: userImages[5],
+  digitalTravel: userImages[6],
+  mercedesAmg: userImages[7],
+  purityRevealed: userImages[8]
+};
+
+const curatedProjectCardMedia = {
+  "odd-modular-music-controller": {
+    cover: userImages[2],
+    reservedImages: [userImages[2]]
+  },
+  "manta-matrix": {
+    cover: userImages[1],
+    reservedImages: [userImages[1], userImages[3]]
+  },
+  "showreel-2025": {
+    cover: userImages[0],
+    reservedImages: [userImages[0]]
+  },
+  "ah-psychedelics": {
+    cover: userImages[4],
+    reservedImages: [userImages[4]]
+  },
+  "thought": {
+    cover: userImages[5],
+    reservedImages: [userImages[5]]
+  },
+  "jupiter": {
+    cover: userImages[6],
+    reservedImages: [userImages[6]]
+  },
+  "chromatik": {
+    cover: userImages[7],
+    reservedImages: [userImages[7]]
+  },
+  "digital-travel": {
+    cover: userImages[8],
+    reservedImages: [userImages[8]]
+  },
+  "mercedes-amg": {
+    cover: userImages[9],
+    reservedImages: [userImages[9]]
+  },
+  "the-purity-revealed": {
+    cover: userImages[12],
+    reservedImages: [userImages[12]]
+  }
 };
 
 function getSanityImageUrl(assetRef, width = 1600) {
@@ -182,130 +256,329 @@ function getMuxPosterUrl(playbackId, width = 1280, height = 720, time = 0) {
 }
 
 const siteProfile = {
-  email: "pertantpacome@gmail.com",
-  showreelUrl: "https://www.behance.net/gallery/202093435/Showreel-2024",
+  email: "3156686289@qq.com",
+  contactLabel: "3156686289@qq.com",
+  showreelUrl: resolveSitePath("about/"),
   showreelPlaybackId: "ycc6bXk6hOWxGnyb6F3wvUxPPLiDML00P9OPkYMjuSN8",
-  showreelCover: "assets/reference/showreel-cover.png",
+  showreelCover: resolveSiteUrl("assets/reference/showreel-cover.png"),
+  profileImage: resolveSiteUrl("assets/profile/portrait-cutout.png"),
   socials: [
-    { label: "Instagram", short: "ig", url: "https://www.instagram.com" },
-    { label: "X / Twitter", short: "x", url: "https://www.x.com/pacomepertant" },
-    { label: "Behance", short: "be", url: "https://www.behance.net/pacomepertant" },
-    { label: "LinkedIn", short: "in", url: "https://www.linkedin.com/in/pac%C3%B4me-pertant-b4437126b/" }
+    { label: "GitHub", short: "gh", url: "https://github.com/suuk324" },
+    { label: "小红书", short: "red", account: "a15706750107" },
+    { label: "Bilibili", short: "bili", account: "阿呆呆呢" }
   ],
   aboutSocials: [
-    { label: "instagram", url: "https://www.instagram.com" },
-    { label: "x / twitter", url: "https://www.x.com/pacomepertant" },
-    { label: "behance", url: "https://www.behance.net/pacomepertant" },
-    { label: "linkedin", url: "https://www.linkedin.com/in/pac%C3%B4me-pertant-b4437126b/" }
-  ],
-  credits: {
-    designLabel: "@louis_bcqt",
-    designUrl: "https://x.com/louis_bcqt",
-    developmentLabel: "@colindmg",
-    developmentUrl: "https://x.com/colindmg"
-  }
+    { label: "github", value: "suuk324", url: "https://github.com/suuk324" },
+    { label: "小红书", value: "a15706750107" },
+    { label: "bilibili", value: "阿呆呆呢" }
+  ]
 };
+
+function buildReportPages(basePath, count) {
+  return Array.from({ length: count }, (_, index) => `${basePath}/page-${String(index + 1).padStart(3, "0")}.jpg`);
+}
+
+function positionShowreelMarqueeChars(marquee, chars, progress = 0) {
+  const width = marquee.clientWidth || 424;
+  const height = marquee.clientHeight || 302;
+  const radius = Math.min(width, height) * 0.2;
+  const straightX = width - radius * 2;
+  const straightY = height - radius * 2;
+  const arcLength = (Math.PI * radius) / 2;
+  const perimeter = straightX * 2 + straightY * 2 + arcLength * 4;
+  const spacing = Math.max(14, perimeter / Math.max(chars.length, 1));
+  const travel = progress * perimeter;
+
+  const getPoint = (rawDistance) => {
+    let distance = rawDistance;
+
+    if (distance < straightX) {
+      return { x: radius + distance, y: 0, angle: 0 };
+    }
+    distance -= straightX;
+
+    if (distance < arcLength) {
+      const theta = -Math.PI / 2 + distance / radius;
+      return {
+        x: width - radius + Math.cos(theta) * radius,
+        y: radius + Math.sin(theta) * radius,
+        angle: (theta + Math.PI / 2) * 180 / Math.PI
+      };
+    }
+    distance -= arcLength;
+
+    if (distance < straightY) {
+      return { x: width, y: radius + distance, angle: 90 };
+    }
+    distance -= straightY;
+
+    if (distance < arcLength) {
+      const theta = distance / radius;
+      return {
+        x: width - radius + Math.cos(theta) * radius,
+        y: height - radius + Math.sin(theta) * radius,
+        angle: (theta + Math.PI / 2) * 180 / Math.PI
+      };
+    }
+    distance -= arcLength;
+
+    if (distance < straightX) {
+      return { x: width - radius - distance, y: height, angle: 180 };
+    }
+    distance -= straightX;
+
+    if (distance < arcLength) {
+      const theta = Math.PI / 2 + distance / radius;
+      return {
+        x: radius + Math.cos(theta) * radius,
+        y: height - radius + Math.sin(theta) * radius,
+        angle: (theta + Math.PI / 2) * 180 / Math.PI
+      };
+    }
+    distance -= arcLength;
+
+    if (distance < straightY) {
+      return { x: 0, y: height - radius - distance, angle: 270 };
+    }
+    distance -= straightY;
+
+    const theta = Math.PI + distance / radius;
+    return {
+      x: radius + Math.cos(theta) * radius,
+      y: radius + Math.sin(theta) * radius,
+      angle: (theta + Math.PI / 2) * 180 / Math.PI
+    };
+  };
+
+  chars.forEach((char, index) => {
+    const distance = (travel + index * spacing) % perimeter;
+    const { x, y, angle } = getPoint(distance);
+    char.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%) rotate(${angle}deg)`;
+  });
+}
+
+function hydrateShowreelMarquees() {
+  const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+
+  qsa(".showreel-marquee").forEach((marquee) => {
+    if (marquee.dataset.ready === "true") {
+      return;
+    }
+
+    marquee.dataset.ready = "true";
+    const text = marquee.dataset.marqueeText || "profile • about me • portfolio • ";
+    let ringText = text;
+    while (ringText.length < 56) {
+      ringText += text;
+    }
+    const chars = Array.from(ringText).map((letter) => {
+      const span = document.createElement("span");
+      span.className = "showreel-marquee-char";
+      span.textContent = letter;
+      marquee.appendChild(span);
+      return span;
+    });
+
+    positionShowreelMarqueeChars(marquee, chars, 0);
+
+    if (reduceMotion) {
+      return;
+    }
+
+    const duration = 12000;
+    const start = performance.now();
+    const tick = () => {
+      const progress = ((performance.now() - start) % duration) / duration;
+      positionShowreelMarqueeChars(marquee, chars, progress);
+    };
+
+    window.setInterval(tick, 1000 / 60);
+  });
+}
 
 const projects = [
   {
-    slug: "paths-of-life",
-    title: "Paths of life",
-    year: "2024",
-    image: referenceMedia.pathsOfLife,
-    thumbnailUrl: getSanityImageUrl("image-53f8a4a889052e6d9f92fc347533062abaf7c28a-1396x770-png"),
-    videoPlaybackId: "79CoZbPvtdGp00mUU3pkRZujFUDwR02LHciDlc9Gl7G7k",
-    videoPosterUrl: getMuxPosterUrl("79CoZbPvtdGp00mUU3pkRZujFUDwR02LHciDlc9Gl7G7k"),
-    description: "Paths of Life is a short film about the different paths we take through life; it features a main character and graphic forms that metaphorically and conceptually illustrate the journey of this main character.",
-    caseUrl: "https://www.behance.net/gallery/201777435/Paths-Of-Life",
-    frames: [
-      getSanityImageUrl("image-c0339b80af376198eb9824c9147b1716d98f25f4-1401x787-webp"),
-      getSanityImageUrl("image-0682241c8abec328eae3063cd78cbb6bdf7f33ec-1396x786-webp"),
-      getSanityImageUrl("image-d74a16d8d2e88d26d00f347147e197ca8ddd46c1-1396x787-webp")
+    slug: "odd-modular-music-controller",
+    title: "声迹 O.D.D",
+    year: "2026",
+    image: resolveSiteUrl("assets/odd/board-02.webp"),
+    thumbnailUrl: resolveSiteUrl("assets/odd/board-02.webp"),
+    videoPlaybackId: null,
+    videoPosterUrl: null,
+    description: "面向 DJ、电子音乐制作人与现场表演者的模块化音乐控制器。项目通过磁吸式硬件模块、AI 辅助调音与便携式交互终端，把自然采样、即时创作与复古物理操作组织成一套可随身携带的创作体验。",
+    caseUrl: "",
+    lockMedia: true,
+    kicker: "Product design / interaction / portable music device",
+    facts: [
+      { label: "类型", value: "产品设计 / 交互设计" },
+      { label: "关键词", value: "模块化 / 采样 / 便携创作 / AI 辅助" },
+      { label: "输出", value: "产品方案 / 展板 / 设计报告" }
     ],
-    width: 320
+    boards: [
+      {
+        src: resolveSiteUrl("assets/odd/board-01.webp"),
+        alt: "ODD 模块化音乐控制器展板总览"
+      },
+      {
+        src: resolveSiteUrl("assets/odd/board-02.webp"),
+        alt: "ODD 模块化音乐控制器细节与结构展板"
+      }
+    ],
+    reportPages: buildReportPages(resolveSiteUrl("assets/odd/report-pages"), 61),
+    reportLabel: "设计报告预览",
+    frames: [
+      resolveSiteUrl("assets/odd/board-01.webp"),
+      resolveSiteUrl("assets/odd/board-02.webp")
+    ],
+    width: 340
   },
   {
-    slug: "the-disease-spread-on-tiktok",
-    title: "The disease spread on Tiktok",
-    year: "2024",
-    image: referenceMedia.disease,
-    thumbnailUrl: getSanityImageUrl("image-19fa225f5d92c65608e2234c0b0bd1fb2e3d681c-3840x1920-png"),
-    videoPlaybackId: "tl4p3L4FYyKx6S4j2Vo1ONIsUu1q5QR3YoTvb76f0202o",
-    videoPosterUrl: getMuxPosterUrl("tl4p3L4FYyKx6S4j2Vo1ONIsUu1q5QR3YoTvb76f0202o"),
-    description: "Youtube content creator Leo Duff commissioned me for his video \"The disease spread on TikTok\", in which he tackles the problem of ADD (attention deficit disorder). The goal was to create an animation that would simplify and popularize how the ADD brain works.",
-    caseUrl: "https://www.behance.net/gallery/221358177/The-disease-spread-on-Tiktok",
+    slug: "manta-matrix",
+    title: "Manta Matrix",
+    year: "2026",
+    image: resolveSiteUrl("assets/manta/board-01.webp"),
+    thumbnailUrl: resolveSiteUrl("assets/manta/board-01.webp"),
+    videoPlaybackId: null,
+    videoPosterUrl: null,
+    description: "针对深海作业潜水员设计的分布式智能生命保障系统。项目围绕高压、低温、黑暗与强流环境下的作业风险，提出由移动救援海上浮岛、生命监测氧气面罩与潜水辅助动力装置组成的主动防护网络，将预警、监测、现场干预与上浮救援整合进同一套系统。",
+    caseUrl: "",
+    lockMedia: true,
+    kicker: "System design / safety equipment / deep-sea rescue",
+    facts: [
+      { label: "类型", value: "系统设计 / 健康产品设计" },
+      { label: "关键词", value: "主动应急 / 救援预处理 / 生命监测 / 分布式保障" },
+      { label: "输出", value: "系统方案 / 展板 / 设计报告" }
+    ],
+    boards: [
+      {
+        src: resolveSiteUrl("assets/manta/board-01.webp"),
+        alt: "Manta Matrix 深海作业安全浮岛与监测救援设备展板"
+      },
+      {
+        src: resolveSiteUrl("assets/manta/board-02.webp"),
+        alt: "Manta Matrix 浮岛、氧气面罩与潜水辅助动力装置细节展板"
+      }
+    ],
+    reportPages: buildReportPages(resolveSiteUrl("assets/manta/report-pages"), 37),
+    reportLabel: "设计报告预览",
     frames: [
-      getSanityImageUrl("image-8c83cd2256e6e28750060836ba761ea4dcef427b-2048x1024-webp"),
-      getSanityImageUrl("image-cac001b4124310995ff7af4d2b4b2b2b8d6f5826-2800x1400-webp"),
-      getSanityImageUrl("image-785c967e8b81619e6d952152eda4de5501ebe3e9-2800x1400-webp")
+      resolveSiteUrl("assets/manta/board-01.webp"),
+      resolveSiteUrl("assets/manta/board-02.webp")
     ],
     width: 360
   },
   {
-    slug: "ah-psychedelics",
-    title: "Ah, Psychedelics",
-    year: "2025",
-    image: referenceMedia.psychedelics,
-    thumbnailUrl: getSanityImageUrl("image-1ca122cfaaff3f8b109554a29cc7a1132d13a0c6-1280x717-png"),
-    videoPlaybackId: "4T5ePLKwMgGBHjNGk018tJ198RPD5qEaIIc6HQ02MjF5c",
-    videoPosterUrl: getMuxPosterUrl("4T5ePLKwMgGBHjNGk018tJ198RPD5qEaIIc6HQ02MjF5c"),
-    description: "What if psychedelics weren't just drugs, but medical treatments? This motion design explores the therapeutic potential of psychedelics, using scientific research to deconstruct preconceived ideas.",
-    caseUrl: "https://www.behance.net/gallery/223730619/Ah-PsychedelicsExplainer",
+    slug: "showreel-2025",
+    title: "智能家居",
+    year: "2026",
+    image: resolveSiteUrl("assets/user-images/optimized/user-01.webp"),
+    thumbnailUrl: resolveSiteUrl("assets/user-images/optimized/user-01.webp"),
+    videoPlaybackId: null,
+    videoPosterUrl: null,
+    description: "智能家居方向的课程设计报告，围绕家庭场景中的产品系统、交互体验与使用流程展开方案整理。",
+    caseUrl: "",
+    kicker: "Product design / smart home / course report",
+    facts: [
+      { label: "类型", value: "智能家居 / 产品系统设计" },
+      { label: "输出", value: "设计报告页面预览" },
+      { label: "状态", value: "设计报告已接入" }
+    ],
+    reportPages: buildReportPages(resolveSiteUrl("assets/projects/showreel-2025/report-pages"), 34),
+    reportLabel: "智能家居设计报告预览",
     frames: [
-      getSanityImageUrl("image-e6b91fc118c818b6f9bdca3d7c9097e45f4728f7-1920x1080-webp"),
-      getSanityImageUrl("image-a94d7ac7b864bdc99757d0ef67420f255ca6b328-1920x1080-webp"),
-      getSanityImageUrl("image-0ab7b4afefb865bb52f4c21910637cd004c8f56e-1920x1080-webp")
+      resolveSiteUrl("assets/user-images/optimized/user-01.webp")
+    ],
+    width: 340
+  },
+  {
+    slug: "ah-psychedelics",
+    title: "电饭煲",
+    year: "2024",
+    image: resolveSiteUrl("assets/user-images/optimized/user-05.webp"),
+    thumbnailUrl: resolveSiteUrl("assets/user-images/optimized/user-05.webp"),
+    videoPlaybackId: null,
+    videoPosterUrl: null,
+    description: "电饭煲产品设计课程报告，围绕家电产品造型、功能结构与用户使用体验展开设计表达。",
+    caseUrl: "",
+    kicker: "Product design / home appliance / rice cooker",
+    facts: [
+      { label: "类型", value: "产品设计 / 家电设计" },
+      { label: "输出", value: "设计报告预览" },
+      { label: "状态", value: "设计报告已接入" }
+    ],
+    reportPages: buildReportPages(resolveSiteUrl("assets/projects/ah-psychedelics/report-pages"), 13),
+    reportLabel: "电饭煲设计报告预览",
+    frames: [
+      resolveSiteUrl("assets/user-images/optimized/user-05.webp")
     ],
     width: 330
   },
   {
     slug: "thought",
-    title: "Thought",
+    title: "小排量机车",
     year: "2025",
-    image: referenceMedia.thought,
-    thumbnailUrl: getSanityImageUrl("image-41a99c4ae85965e19dcc6befe7caaae6c2d54d9c-1146x644-png"),
-    videoPlaybackId: "xID01eUh12oDNh5MRbAh6fRHQtlq6upbqwinWRzWnE38",
-    videoPosterUrl: getMuxPosterUrl("xID01eUh12oDNh5MRbAh6fRHQtlq6upbqwinWRzWnE38"),
-    description: "Exploring the emergence of new, spontaneous ideas.",
-    caseUrl: "https://www.behance.net/gallery/217440473/Thought",
+    image: resolveSiteUrl("assets/user-images/optimized/user-06.webp"),
+    thumbnailUrl: resolveSiteUrl("assets/user-images/optimized/user-06.webp"),
+    videoPlaybackId: null,
+    videoPosterUrl: null,
+    description: "小排量机车产品设计报告，聚焦交通工具造型、比例控制、结构表达与使用场景。",
+    caseUrl: "",
+    kicker: "Product design / mobility / motorcycle",
+    facts: [
+      { label: "类型", value: "交通工具设计 / 产品设计" },
+      { label: "输出", value: "设计报告预览" },
+      { label: "状态", value: "设计报告已接入" }
+    ],
+    reportPages: buildReportPages(resolveSiteUrl("assets/projects/thought/report-pages"), 33),
+    reportLabel: "小排量机车设计报告预览",
     frames: [
-      getSanityImageUrl("image-b914fc76feb83565da1443ddde76460ca53a628a-1920x1080-webp"),
-      getSanityImageUrl("image-ecd26b748f6480d043f23da1c11742843e1d5e96-1920x1080-webp"),
-      getSanityImageUrl("image-72bb1c5c6980b6ef269c5daf343f80fe1dba7ceb-1920x1080-webp")
+      resolveSiteUrl("assets/user-images/optimized/user-06.webp")
     ],
     width: 340
   },
   {
     slug: "jupiter",
-    title: "Jupiter",
-    year: "2026",
-    image: referenceMedia.jupiter,
-    thumbnailUrl: getSanityImageUrl("image-bff6c9518d1b998df04c33101d61ad965fd23a98-1413x760-png"),
-    videoPlaybackId: "00j0002c6600iaejjGj002bhmaJqSlW02PstH7do6QJRPJImM",
-    videoPosterUrl: getMuxPosterUrl("00j0002c6600iaejjGj002bhmaJqSlW02PstH7do6QJRPJImM"),
-    description: "Release motion created a few months ago for Jupiter, to mark the launch of their stablecoin.",
-    caseUrl: null,
+    title: "冲牙器",
+    year: "2025",
+    image: resolveSiteUrl("assets/user-images/optimized/user-07.webp"),
+    thumbnailUrl: resolveSiteUrl("assets/user-images/optimized/user-07.webp"),
+    videoPlaybackId: null,
+    videoPosterUrl: null,
+    description: "冲牙器产品设计报告，围绕个人护理产品的功能结构、握持体验、使用流程与造型表达展开设计。",
+    caseUrl: "",
+    kicker: "Product design / oral care / water flosser",
+    facts: [
+      { label: "类型", value: "产品设计 / 个人护理产品" },
+      { label: "输出", value: "设计报告页面预览" },
+      { label: "状态", value: "设计报告已接入" }
+    ],
+    reportPages: buildReportPages(resolveSiteUrl("assets/projects/jupiter/report-pages"), 26),
+    reportLabel: "冲牙器设计报告预览",
     frames: [
-      getSanityImageUrl("image-210a5bf2623baa889a063d57eed6b6691f7b8d0a-1920x1080-png"),
-      getSanityImageUrl("image-2a7abb8206251d838e6098e22c7138b14ab6a626-1920x1080-png"),
-      getSanityImageUrl("image-c81cb0cff370a067b2b9ef4d5fccc45da93513e8-1920x1080-png")
+      resolveSiteUrl("assets/user-images/optimized/user-07.webp")
     ],
     width: 460
   },
   {
     slug: "chromatik",
-    title: "Chromatik",
+    title: "LUNE 车顶帐篷",
     year: "2025",
-    image: referenceMedia.chromatik,
-    thumbnailUrl: getSanityImageUrl("image-80de59a860bc12ff92d9d349ffe319cfb92a8de8-1258x984-png"),
-    videoPlaybackId: "02Bf00ukchvF00C017njOiuDYNLW6HjDDgCFq6FL8eal1k8",
-    videoPosterUrl: getMuxPosterUrl("02Bf00ukchvF00C017njOiuDYNLW6HjDDgCFq6FL8eal1k8"),
-    description: "A visual and sound experiment. Shapes, blend tones, and retro tones collide to create a playful study in motion & texture.",
-    caseUrl: "https://www.behance.net/gallery/238825325/CHROMATIK",
+    image: resolveSiteUrl("assets/user-images/optimized/user-08.webp"),
+    thumbnailUrl: resolveSiteUrl("assets/user-images/optimized/user-08.webp"),
+    videoPlaybackId: null,
+    videoPosterUrl: null,
+    description: "LUNE 一体式全自动充气车顶帐篷目标导向设计报告，围绕户外出行场景、用户目标与产品系统体验展开方案。",
+    caseUrl: "",
+    kicker: "Goal-directed design / outdoor product / roof tent",
+    facts: [
+      { label: "类型", value: "户外产品设计 / 目标导向设计" },
+      { label: "输出", value: "设计报告预览" },
+      { label: "状态", value: "设计报告已接入" }
+    ],
+    reportPages: buildReportPages(resolveSiteUrl("assets/projects/chromatik/report-pages"), 27),
+    reportLabel: "LUNE 目标导向设计报告预览",
     frames: [
-      getSanityImageUrl("image-e051555ca7b36d957930af02322d9ad5d2ba4a89-1080x1080-webp"),
-      getSanityImageUrl("image-76f2105215ab670f9b708cbd5bbda24af440ddfc-1080x1080-webp"),
-      getSanityImageUrl("image-22d77c92b7c5483e62d7e83d206f1a3326440bc9-1080x1080-webp")
+      resolveSiteUrl("assets/user-images/optimized/user-08.webp")
     ],
     width: 300
   },
@@ -313,53 +586,155 @@ const projects = [
     slug: "digital-travel",
     title: "Digital Travel",
     year: "2024",
-    image: referenceMedia.digitalTravel,
-    thumbnailUrl: getSanityImageUrl("image-219c0768c852e48380fd831ed0772f7c173ac0ea-1280x719-png"),
-    videoPlaybackId: "ju6elgST7uaWqO9MLc4ODA9V8dkOLmYFdrbSPtXTFaM",
-    videoPosterUrl: getMuxPosterUrl("ju6elgST7uaWqO9MLc4ODA9V8dkOLmYFdrbSPtXTFaM"),
-    description: "A personal project in which a user logs on to his computer ans clicks on a simple play button, leading to the appearance of shapes, colors and anything else that might happen inside a computer while it's loading.",
-    caseUrl: "https://www.behance.net/gallery/191741223/DIgital-Travel",
+    image: resolveSiteUrl("assets/user-images/optimized/user-09.webp"),
+    thumbnailUrl: resolveSiteUrl("assets/user-images/optimized/user-09.webp"),
+    videoPlaybackId: null,
+    videoPosterUrl: null,
+    description: "该项目详情页框架已建立，等待后续接入设计报告素材或展板图片。",
+    caseUrl: "",
     frames: [
-      getSanityImageUrl("image-e4883a908b634c82a380c6de3a46cae8e3bacb4c-950x538-webp"),
-      getSanityImageUrl("image-ba830865f555c4cb43e89395aab77d636523dee9-956x537-webp"),
-      getSanityImageUrl("image-67bacd3b38aefef4e0b55d46ea880330d1f821dd-954x537-webp")
+      resolveSiteUrl("assets/user-images/optimized/user-09.webp")
     ],
     width: 320
   },
   {
     slug: "mercedes-amg",
-    title: "Mercedes AMG",
+    title: "设计与材料",
     year: "2025",
-    image: referenceMedia.mercedesAmg,
-    thumbnailUrl: getSanityImageUrl("image-f430b963c80253937547780211cd3abe7b23924c-1920x1080-png"),
-    videoPlaybackId: "J6q7eMxUJgjTxJbliCliQSeZtUQYN00iAONNIkyFEZYE",
-    videoPosterUrl: getMuxPosterUrl("J6q7eMxUJgjTxJbliCliQSeZtUQYN00iAONNIkyFEZYE"),
-    description: "AMG-GT is a 3D motion study project made at school, using Cinema4D and AfterEffects.",
-    caseUrl: null,
+    image: resolveSiteUrl("assets/user-images/optimized/user-10.webp"),
+    thumbnailUrl: resolveSiteUrl("assets/user-images/optimized/user-10.webp"),
+    videoPlaybackId: null,
+    videoPosterUrl: null,
+    description: "设计与材料课程作业，围绕材料特性、产品语义和设计表达之间的关系展开整理。",
+    caseUrl: "",
+    kicker: "Material study / product design / course work",
+    facts: [
+      { label: "类型", value: "设计与材料 / 课程作业" },
+      { label: "输出", value: "课程作业页面预览" },
+      { label: "状态", value: "设计报告已接入" }
+    ],
+    reportPages: buildReportPages(resolveSiteUrl("assets/projects/mercedes-amg/report-pages"), 16),
+    reportLabel: "设计与材料课程作业预览",
     frames: [
-      getSanityImageUrl("image-c7598f69c07a132203463f8c226fdc22a74bb2dc-1200x675-jpg"),
-      getSanityImageUrl("image-da0d2c21fa9279670b5cc32418b90c36895bd5fc-1920x1080-jpg")
+      resolveSiteUrl("assets/user-images/optimized/user-10.webp")
     ],
     width: 280
   },
   {
     slug: "the-purity-revealed",
-    title: "The purity revealed",
+    title: "专题设计一",
     year: "2025",
-    image: referenceMedia.purityRevealed,
-    thumbnailUrl: getSanityImageUrl("image-689cc8437a49fac1ba8f12012d73cf9d20ce46fb-3840x2160-png"),
-    videoPlaybackId: "qAQWnnz023A00z77cnBAm18r6vyFgkcde9EKurPYVIZAM",
-    videoPosterUrl: getMuxPosterUrl("qAQWnnz023A00z77cnBAm18r6vyFgkcde9EKurPYVIZAM"),
-    description: "A personal project in which I imagined a collaboration between the Swarovski brand and Evian. The collaboration would involve distributing limited edition products from both brands at events such as Roland Garros, Fashion Week, Dubai Week and the Met Gala.",
-    caseUrl: "https://www.behance.net/gallery/221365289/The-purity-revealed",
+    image: resolveSiteUrl("assets/user-images/optimized/user-13.webp"),
+    thumbnailUrl: resolveSiteUrl("assets/user-images/optimized/user-13.webp"),
+    videoPlaybackId: null,
+    videoPosterUrl: null,
+    description: "大三专题设计一设计报告，展示专题设计阶段的研究、方案推导与最终设计表达。",
+    caseUrl: "",
+    kicker: "Product design / studio project / design report",
+    facts: [
+      { label: "类型", value: "专题设计 / 产品设计" },
+      { label: "输出", value: "设计报告预览" },
+      { label: "状态", value: "设计报告已接入" }
+    ],
+    reportPages: buildReportPages(resolveSiteUrl("assets/projects/the-purity-revealed/report-pages"), 37),
+    reportLabel: "专题设计一设计报告预览",
     frames: [
-      getSanityImageUrl("image-f81118f82a6de006c2e7cd1f9536fb8bde0a4f5c-1920x1080-webp"),
-      getSanityImageUrl("image-5e9a5260adfb4958efacee863d5f760906a2d131-960x540-webp"),
-      getSanityImageUrl("image-cd25e78cc10daec35a2b1f9ba270cbb2dc3c2df5-2800x1575-webp")
+      resolveSiteUrl("assets/user-images/optimized/user-13.webp")
     ],
     width: 320
   }
 ];
+
+function getUniqueImageList(images) {
+  return Array.from(new Set(images.filter(Boolean)));
+}
+
+function getProjectFrames(images, projectIndex, coverImage, frameCount = 3) {
+  const uniqueImages = getUniqueImageList(images);
+  if (!uniqueImages.length) {
+    return coverImage ? [coverImage] : [];
+  }
+
+  const frames = [];
+  const used = new Set();
+  const startIndex = (projectIndex + 1) % uniqueImages.length;
+
+  for (let offset = 0; offset < uniqueImages.length && frames.length < frameCount; offset += 1) {
+    const candidate = uniqueImages[(startIndex + offset) % uniqueImages.length];
+    if (!candidate || used.has(candidate)) {
+      continue;
+    }
+
+    used.add(candidate);
+    frames.push(candidate);
+  }
+
+  if (!frames.length && coverImage) {
+    frames.push(coverImage);
+  }
+
+  return frames;
+}
+
+function applyUserImagesToProjects(projectList, images) {
+  const reservedImages = new Set(
+    Object.values(curatedProjectCardMedia).flatMap((entry) => [
+      entry.cover,
+      ...(entry.reservedImages || [])
+    ]).filter(Boolean)
+  );
+  const uniqueImages = getUniqueImageList(images).filter((image) => !reservedImages.has(image));
+  if (!uniqueImages.length) {
+    console.warn("No user images found for project cards.");
+    return;
+  }
+
+  Object.entries(curatedProjectCardMedia).forEach(([slug, media]) => {
+    const project = projectList.find((entry) => entry.slug === slug);
+    if (!project || !media.cover) {
+      return;
+    }
+
+    project.image = media.cover;
+    project.thumbnailUrl = media.cover;
+    project.videoPlaybackId = null;
+    project.videoPosterUrl = null;
+  });
+
+  const curatedSlugs = new Set(Object.keys(curatedProjectCardMedia));
+  const mutableProjects = projectList.filter((project) => !project.lockMedia && !curatedSlugs.has(project.slug));
+
+  if (uniqueImages.length < mutableProjects.length) {
+    console.warn(`Only ${uniqueImages.length} unique images found for ${mutableProjects.length} projects. Some covers may repeat.`);
+  }
+
+  mutableProjects.forEach((project, index) => {
+    const coverImage = uniqueImages[index] || uniqueImages[index % uniqueImages.length];
+
+    project.image = coverImage;
+    project.thumbnailUrl = coverImage;
+    project.videoPlaybackId = null;
+    project.videoPosterUrl = null;
+    project.frames = getProjectFrames(uniqueImages, index, coverImage);
+  });
+
+  const duplicateCovers = [];
+  const coverTracker = new Set();
+  projectList.forEach((project) => {
+    if (coverTracker.has(project.image)) {
+      duplicateCovers.push(project.image);
+      return;
+    }
+
+    coverTracker.add(project.image);
+  });
+
+  if (duplicateCovers.length) {
+    console.warn("Duplicate project cover images detected:", duplicateCovers);
+  }
+}
+
+applyUserImagesToProjects(projects, userImages);
 
 const state = {
   hoveredSlug: null,
@@ -391,7 +766,16 @@ function clamp(value, min, max) {
 }
 
 function buildProjectPath(slug) {
-  return `project.html?slug=${encodeURIComponent(slug)}`;
+  return resolveSitePath(`projects/${encodeURIComponent(slug)}/`);
+}
+
+function normalizeProjectKey(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 function getCurrentProjectSlug() {
@@ -424,7 +808,13 @@ function lerp(start, end, alpha) {
 }
 
 function getProject(slug) {
-  return projects.find((project) => project.slug === slug) || projects[0];
+  const normalizedSlug = normalizeProjectKey(slug);
+  const matchedProject = projects.find((project) => {
+    return normalizeProjectKey(project.slug) === normalizedSlug ||
+      normalizeProjectKey(project.title) === normalizedSlug;
+  });
+
+  return matchedProject || projects[0];
 }
 
 function getProjectThumbnail(project) {
@@ -516,8 +906,14 @@ function setupChrome() {
 function hydrateReferenceChrome() {
   qsa(".showreel-card").forEach((link) => {
     link.href = siteProfile.showreelUrl;
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
+    if (/^https?:\/\//i.test(siteProfile.showreelUrl || "")) {
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      return;
+    }
+
+    link.removeAttribute("target");
+    link.removeAttribute("rel");
   });
 
   qsa(".showreel-frame img").forEach((image) => {
@@ -525,36 +921,62 @@ function hydrateReferenceChrome() {
     image.alt = "Showreel cover";
   });
 
+  hydrateShowreelMarquees();
+
   const previewImage = qs("#list-preview-image");
   if (previewImage) {
-    previewImage.src = getProjectThumbnail(getProject("the-disease-spread-on-tiktok"));
+    previewImage.src = getProjectThumbnail(projects[0]);
     previewImage.alt = "Project preview";
   }
 
   qsa('a[href^="mailto:"]').forEach((link) => {
-    link.href = `mailto:${siteProfile.email}`;
+    if (siteProfile.email) {
+      link.href = `mailto:${siteProfile.email}`;
+      return;
+    }
+
+    link.href = "#";
+    link.setAttribute("aria-disabled", "true");
   });
 
   qsa(".menu-mail").forEach((link) => {
-    link.textContent = siteProfile.email;
+    link.textContent = siteProfile.email || siteProfile.contactLabel;
+    if (!siteProfile.email) {
+      link.href = "#";
+      link.setAttribute("aria-disabled", "true");
+    }
   });
 
   const menuSocials = qsa(".menu-socials");
   menuSocials.forEach((wrapper) => {
-    wrapper.innerHTML = siteProfile.socials.map((social) => {
-      return `<a href="${social.url}" target="_blank" rel="noopener noreferrer" aria-label="${social.label}">${social.short}</a>`;
-    }).join("");
+    wrapper.innerHTML = siteProfile.socials.length
+      ? siteProfile.socials.map((social) => {
+        if (social.url) {
+          return `<a href="${social.url}" target="_blank" rel="noopener noreferrer" aria-label="${social.label}">${social.short}</a>`;
+        }
+
+        return `<span class="menu-social-chip" title="${social.label}: ${social.account || social.short}">${social.short}</span>`;
+      }).join("")
+      : `<span class="menu-socials-pending">links pending</span>`;
   });
 
   const aboutSocials = qs(".about-socials");
   if (aboutSocials) {
     aboutSocials.innerHTML = `
       <div class="about-social-links">
-        ${siteProfile.aboutSocials.map((social) => `<a href="${social.url}" target="_blank" rel="noopener noreferrer">${social.label}</a>`).join("")}
+        ${siteProfile.aboutSocials.length
+          ? siteProfile.aboutSocials.map((social) => {
+            const label = `${social.label} / ${social.value || ""}`.trim();
+            if (social.url) {
+              return `<a href="${social.url}" target="_blank" rel="noopener noreferrer">${label}</a>`;
+            }
+
+            return `<span>${label}</span>`;
+          }).join("")
+          : "<span>social links pending</span>"}
       </div>
       <p class="about-credits">
-        <span>design <a href="${siteProfile.credits.designUrl}" target="_blank" rel="noopener noreferrer">${siteProfile.credits.designLabel}</a></span>
-        <span>development <a href="${siteProfile.credits.developmentUrl}" target="_blank" rel="noopener noreferrer">${siteProfile.credits.developmentLabel}</a></span>
+        <span>product design / interaction / visual expression</span>
       </p>
     `;
   }
@@ -691,6 +1113,9 @@ class SpiralStage {
     this.minWheelSpeed = getNumericQueryParam("homeSpin", HOME_DEFAULT_SPIN);
     this.wheelDirection = 1;
     this.hoveredMesh = null;
+    this.pointerInside = false;
+    this.pointerClientX = 0;
+    this.pointerClientY = 0;
     this.activePointerId = null;
     this.lastDragX = 0;
     this.dragStartX = 0;
@@ -759,6 +1184,68 @@ class SpiralStage {
     };
   }
 
+  getPixelRatio() {
+    const nativeRatio = window.devicePixelRatio || 1;
+    const compact = window.matchMedia("(max-width: 900px)").matches;
+    const cap = window.matchMedia("(max-width: 900px)").matches ? HOME_MOBILE_MAX_PIXEL_RATIO : HOME_MAX_PIXEL_RATIO;
+    const targetRatio = compact ? nativeRatio : Math.max(nativeRatio, 2);
+    return Math.max(1, Math.min(targetRatio, cap));
+  }
+
+  getRenderTargetSamples() {
+    if (!this.renderer?.capabilities?.isWebGL2) {
+      return 0;
+    }
+
+    const maxSamples = this.renderer.capabilities.maxSamples || HOME_RENDER_TARGET_SAMPLES;
+    return Math.max(0, Math.min(HOME_RENDER_TARGET_SAMPLES, maxSamples));
+  }
+
+  createRenderTarget(width, height) {
+    const pixelRatio = this.getPixelRatio();
+    const target = new this.THREE.WebGLRenderTarget(
+      Math.max(1, Math.ceil(width * pixelRatio)),
+      Math.max(1, Math.ceil(height * pixelRatio)),
+      {
+        colorSpace: this.THREE.SRGBColorSpace,
+        minFilter: this.THREE.LinearFilter,
+        magFilter: this.THREE.LinearFilter,
+        depthBuffer: true,
+        stencilBuffer: false,
+        samples: this.getRenderTargetSamples()
+      }
+    );
+
+    target.texture.colorSpace = this.THREE.SRGBColorSpace;
+    target.texture.minFilter = this.THREE.LinearFilter;
+    target.texture.magFilter = this.THREE.LinearFilter;
+    target.texture.generateMipmaps = false;
+    return target;
+  }
+
+  resizeRenderTarget(width, height) {
+    const pixelRatio = this.getPixelRatio();
+    this.renderTarget.setSize(
+      Math.max(1, Math.ceil(width * pixelRatio)),
+      Math.max(1, Math.ceil(height * pixelRatio))
+    );
+    this.renderTarget.samples = this.getRenderTargetSamples();
+  }
+
+  configureCardTexture(texture) {
+    texture.colorSpace = this.THREE.SRGBColorSpace;
+    texture.magFilter = this.THREE.LinearFilter;
+    texture.minFilter = this.renderer?.capabilities?.isWebGL2
+      ? this.THREE.LinearMipmapLinearFilter
+      : this.THREE.LinearFilter;
+    texture.generateMipmaps = Boolean(this.renderer?.capabilities?.isWebGL2);
+    texture.anisotropy = this.renderer
+      ? Math.min(16, this.renderer.capabilities.getMaxAnisotropy?.() || 8)
+      : 8;
+    texture.needsUpdate = true;
+    return texture;
+  }
+
   async init() {
     this.setupScene();
     this.createPlanes();
@@ -773,8 +1260,7 @@ class SpiralStage {
 
     const results = await Promise.allSettled(this.projects.map(async (project) => {
       const texture = await this.loadTextureForProject(loader, project);
-      texture.colorSpace = this.THREE.SRGBColorSpace;
-      texture.anisotropy = 8;
+      this.configureCardTexture(texture);
 
       const previousTexture = this.textures.get(project.slug);
       this.textures.set(project.slug, texture);
@@ -868,9 +1354,7 @@ class SpiralStage {
     context.fillText(project.year, 56, canvas.height - 84);
 
     const texture = new this.THREE.CanvasTexture(canvas);
-    texture.colorSpace = this.THREE.SRGBColorSpace;
-    texture.anisotropy = 8;
-    return texture;
+    return this.configureCardTexture(texture);
   }
 
   setupScene() {
@@ -885,14 +1369,12 @@ class SpiralStage {
       antialias: true,
       powerPreference: "high-performance"
     });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+    this.renderer.setPixelRatio(this.getPixelRatio());
     this.renderer.setSize(clientWidth, clientHeight);
     this.renderer.outputColorSpace = this.THREE.SRGBColorSpace;
     this.renderer.domElement.className = "webgl-canvas";
     this.renderer.setClearColor(0x0e0d0e, 0);
-    this.renderTarget = new this.THREE.WebGLRenderTarget(clientWidth, clientHeight, {
-      colorSpace: this.THREE.SRGBColorSpace
-    });
+    this.renderTarget = this.createRenderTarget(clientWidth, clientHeight);
 
     this.root = new this.THREE.Group();
     this.root.position.set(this.layout.sceneOffsetX, this.layout.sceneOffsetY, 0);
@@ -930,7 +1412,7 @@ class SpiralStage {
       const texture = this.textures.get(project.slug) || this.createPlaceholderTexture(project);
       const baseZoom = getProjectStageZoom(project);
       this.textures.set(project.slug, texture);
-      const geometry = new this.THREE.PlaneGeometry(1, 1, 8, 8);
+      const geometry = new this.THREE.PlaneGeometry(1, 1, 32, 18);
       const material = new this.THREE.ShaderMaterial({
         uniforms: {
           uTexture: { value: texture },
@@ -954,9 +1436,14 @@ class SpiralStage {
         },
         vertexShader: PLANE_VERTEX_SHADER,
         fragmentShader: PLANE_FRAGMENT_SHADER,
+        extensions: {
+          derivatives: true
+        },
         transparent: true,
         side: this.THREE.DoubleSide,
-        depthWrite: false
+        depthWrite: false,
+        depthTest: true,
+        blending: this.THREE.NormalBlending
       });
 
       const mesh = new this.THREE.Mesh(geometry, material);
@@ -1025,8 +1512,8 @@ class SpiralStage {
     this.root.position.set(this.layout.sceneOffsetX, this.layout.sceneOffsetY, 0);
     this.root.scale.setScalar(this.layout.sceneScale);
     this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
-    this.renderTarget.setSize(this.container.clientWidth, this.container.clientHeight);
+    this.renderer.setPixelRatio(this.getPixelRatio());
+    this.resizeRenderTarget(this.container.clientWidth, this.container.clientHeight);
   }
 
   onWheel(event) {
@@ -1044,6 +1531,9 @@ class SpiralStage {
     const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     const y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
     this.pointer.set(x, y);
+    this.pointerInside = true;
+    this.pointerClientX = event.clientX;
+    this.pointerClientY = event.clientY;
 
     if (this.activePointerId === event.pointerId) {
       if (!this.isDragging && Math.abs(event.clientX - this.dragStartX) > this.dragThreshold) {
@@ -1064,10 +1554,9 @@ class SpiralStage {
 
   onPointerLeave() {
     this.pointer.set(0, 0);
+    this.pointerInside = false;
     if (!this.activePointerId) {
-      this.hoveredMesh = null;
-      state.hoveredSlug = null;
-      this.container.style.cursor = "default";
+      this.setHoveredMesh(null);
     }
   }
 
@@ -1092,14 +1581,136 @@ class SpiralStage {
     this.touchVelocityX = 0;
   }
 
-  onCanvasClick() {
-    if (!this.hoveredMesh || this.currentMode !== "spiral") {
+  onCanvasClick(event) {
+    if (this.currentMode !== "spiral") {
       return;
     }
     if (this.isDragging) {
       return;
     }
-    window.location.href = buildProjectPath(this.hoveredMesh.userData.project.slug);
+    const targetMesh = this.resolveMeshFromClientPoint(event.clientX, event.clientY);
+    if (!targetMesh) {
+      return;
+    }
+    window.location.href = buildProjectPath(targetMesh.userData.project.slug);
+  }
+
+  setHoveredMesh(mesh) {
+    this.hoveredMesh = mesh;
+    state.hoveredSlug = mesh ? mesh.userData.project.slug : null;
+    this.container.style.cursor = mesh ? "pointer" : "default";
+  }
+
+  isMeshFrontFacing(mesh) {
+    const normal = new this.THREE.Vector3(0, 0, 1).transformDirection(mesh.matrixWorld);
+    const meshWorldPosition = new this.THREE.Vector3();
+    mesh.getWorldPosition(meshWorldPosition);
+    const toCamera = new this.THREE.Vector3().copy(this.camera.position).sub(meshWorldPosition);
+    return normal.dot(toCamera) > 0;
+  }
+
+  pointInTriangle(point, a, b, c) {
+    const cross1 = (point.x - b.x) * (a.y - b.y) - (a.x - b.x) * (point.y - b.y);
+    const cross2 = (point.x - c.x) * (b.y - c.y) - (b.x - c.x) * (point.y - c.y);
+    const cross3 = (point.x - a.x) * (c.y - a.y) - (c.x - a.x) * (point.y - a.y);
+    const hasNegative = cross1 < -0.5 || cross2 < -0.5 || cross3 < -0.5;
+    const hasPositive = cross1 > 0.5 || cross2 > 0.5 || cross3 > 0.5;
+    return !(hasNegative && hasPositive);
+  }
+
+  projectMeshToScreen(mesh, rect) {
+    const geometry = mesh.geometry;
+    const positions = geometry.attributes.position;
+    const uvs = geometry.attributes.uv;
+    const indices = geometry.index ? geometry.index.array : null;
+    const projectionMatrix = this.camera.projectionMatrix;
+    const viewMatrix = this.camera.matrixWorldInverse;
+    const pointCount = positions.count;
+    const screenPoints = new Array(pointCount);
+    const localPosition = new this.THREE.Vector3();
+    const worldPosition = new this.THREE.Vector3();
+    const deformedPosition = new this.THREE.Vector3();
+    const viewPosition = new this.THREE.Vector3();
+    const clipPosition = new this.THREE.Vector4();
+    const centerWorldPosition = new this.THREE.Vector3();
+
+    for (let index = 0; index < pointCount; index += 1) {
+      localPosition.fromBufferAttribute(positions, index);
+      worldPosition.copy(localPosition).applyMatrix4(mesh.matrixWorld);
+      deformedPosition.copy(localPosition);
+      deformedPosition.z = Math.sin(uvs.getX(index) * Math.PI) * 0.2;
+      viewPosition.copy(deformedPosition).applyMatrix4(mesh.matrixWorld).applyMatrix4(viewMatrix);
+      viewPosition.x += Math.pow(worldPosition.y, 2) * 0.1;
+      viewPosition.x += Math.sin(uvs.getY(index) * Math.PI) * this.wheelDeltaY * 2;
+
+      clipPosition.set(viewPosition.x, viewPosition.y, viewPosition.z, 1).applyMatrix4(projectionMatrix);
+      const inverseW = clipPosition.w !== 0 ? 1 / clipPosition.w : 0;
+      const ndcX = clipPosition.x * inverseW;
+      const ndcY = clipPosition.y * inverseW;
+
+      screenPoints[index] = {
+        x: rect.left + (ndcX * 0.5 + 0.5) * rect.width,
+        y: rect.top + (-ndcY * 0.5 + 0.5) * rect.height
+      };
+    }
+
+    mesh.getWorldPosition(centerWorldPosition);
+    const depth = centerWorldPosition.applyMatrix4(viewMatrix).z;
+
+    return {
+      depth,
+      indices,
+      screenPoints
+    };
+  }
+
+  resolveMeshFromClientPoint(clientX, clientY) {
+    if (this.currentMode !== "spiral") {
+      return null;
+    }
+
+    const rect = this.container.getBoundingClientRect();
+    if (
+      clientX < rect.left ||
+      clientX > rect.right ||
+      clientY < rect.top ||
+      clientY > rect.bottom
+    ) {
+      return null;
+    }
+
+    const point = { x: clientX, y: clientY };
+    let bestMatch = null;
+    let bestDepth = -Infinity;
+
+    this.meshes.forEach((mesh) => {
+      if (mesh.userData.hiddenProgress >= 0.01) {
+        return;
+      }
+
+      const { depth, indices, screenPoints } = this.projectMeshToScreen(mesh, rect);
+      const triangleCount = indices ? indices.length / 3 : screenPoints.length / 3;
+
+      for (let triangleIndex = 0; triangleIndex < triangleCount; triangleIndex += 1) {
+        const indexA = indices ? indices[triangleIndex * 3] : triangleIndex * 3;
+        const indexB = indices ? indices[triangleIndex * 3 + 1] : triangleIndex * 3 + 1;
+        const indexC = indices ? indices[triangleIndex * 3 + 2] : triangleIndex * 3 + 2;
+        if (
+          this.pointInTriangle(
+            point,
+            screenPoints[indexA],
+            screenPoints[indexB],
+            screenPoints[indexC]
+          ) &&
+          depth > bestDepth
+        ) {
+          bestDepth = depth;
+          bestMatch = mesh;
+        }
+      }
+    });
+
+    return bestMatch;
   }
 
   updateMeshes(delta) {
@@ -1142,27 +1753,11 @@ class SpiralStage {
   }
 
   updateHoverState() {
-    if (this.currentMode !== "spiral") {
-      this.hoveredMesh = null;
-      state.hoveredSlug = null;
-      this.container.style.cursor = "default";
+    if (this.currentMode !== "spiral" || !this.pointerInside || this.isDragging) {
+      this.setHoveredMesh(null);
       return;
     }
-
-    this.raycaster.setFromCamera(this.pointer, this.camera);
-    const intersections = this.raycaster.intersectObjects(this.meshes, false);
-    const visibleTarget = intersections.find((entry) => {
-      const mesh = entry.object;
-      if (!entry.face || mesh.userData.hiddenProgress >= 0.01) {
-        return false;
-      }
-      const normal = entry.face.normal.clone().transformDirection(mesh.matrixWorld);
-      return normal.dot(this.raycaster.ray.direction) < 0;
-    }) || null;
-
-    this.hoveredMesh = visibleTarget ? visibleTarget.object : null;
-    state.hoveredSlug = this.hoveredMesh ? this.hoveredMesh.userData.project.slug : null;
-    this.container.style.cursor = this.hoveredMesh ? "pointer" : "default";
+    this.setHoveredMesh(this.resolveMeshFromClientPoint(this.pointerClientX, this.pointerClientY));
   }
 
   render() {
@@ -1183,6 +1778,7 @@ class SpiralStage {
     this.scene.updateMatrixWorld(true);
     this.updateHoverState();
     this.renderer.setRenderTarget(this.renderTarget);
+    this.renderer.clear(true, true, true);
     this.renderer.render(this.scene, this.camera);
     this.renderer.setRenderTarget(null);
     this.renderer.render(this.postScene, this.postCamera);
@@ -1240,7 +1836,7 @@ function fillAboutTrack(track, directionOffset = 0) {
 function initAboutPage() {
   const aboutCopy = qs(".about-copy-sticky p");
   if (aboutCopy) {
-    aboutCopy.innerHTML = "I&rsquo;m Pacome Pertant, motion and sound designer based in Paris. I move shapes and sound to create emotional content. Always playing with rhythm, sound and visual narrative on a 2D and/or 3D canvas. Clean at times, experimental at others.";
+    aboutCopy.innerHTML = "陈镔睿的个人作品集页面正在整理中。后续会补充个人介绍、联系方式和完整作品说明。";
   }
 
   fillAboutTrack(qs("#about-strip-track-a"), 0);
@@ -1264,6 +1860,114 @@ function getProjectHeroMarkup(project) {
   }
 
   return `<img src="${getProjectThumbnail(project)}" alt="${project.title}">`;
+}
+
+function getProjectActionLinks(project) {
+  const links = [];
+
+  if (Array.isArray(project.reportPages) && project.reportPages.length) {
+    links.push(`<a class="project-link" href="#project-report">查看报告预览</a>`);
+  }
+
+  if (Array.isArray(project.boards) && project.boards.length) {
+    links.push(`<a class="project-link project-link-secondary" href="#project-works">查看作品展示</a>`);
+  }
+
+  if (project.caseUrl && project.caseUrl !== "#" && project.allowExternalCase) {
+    links.push(`<a class="project-link project-link-secondary" href="${project.caseUrl}" target="_blank" rel="noopener noreferrer">see the case</a>`);
+  }
+
+  return links.join("");
+}
+
+function hasProjectMaterials(project) {
+  return Boolean(
+    (Array.isArray(project.reportPages) && project.reportPages.length) ||
+    (Array.isArray(project.boards) && project.boards.length) ||
+    project.contentReady
+  );
+}
+
+function getProjectFacts(project) {
+  if (Array.isArray(project.facts) && project.facts.length) {
+    return project.facts;
+  }
+
+  return [
+    { label: "类型", value: "作品项目" },
+    { label: "状态", value: "框架已建立 / 内容待补充" },
+    { label: "待接入", value: "设计报告预览 / 展板图片" }
+  ];
+}
+
+function getProjectDescription(project) {
+  if (hasProjectMaterials(project)) {
+    return project.description;
+  }
+
+  return "项目详情页框架已建立。后续接入设计报告素材或展板图片后，这里会补充完整的项目介绍、设计过程和成果展示。";
+}
+
+function getProjectStatusMarkup(project) {
+  if (hasProjectMaterials(project)) {
+    return "";
+  }
+
+  return `
+    <div class="project-status">
+      <span>项目内容待补充</span>
+      <p>等待接入设计报告素材或展板图片。</p>
+    </div>
+  `;
+}
+
+function ensureMeta(selector, createAttributes) {
+  let node = document.head.querySelector(selector);
+  if (!node) {
+    node = document.createElement("meta");
+    Object.entries(createAttributes).forEach(([key, value]) => {
+      node.setAttribute(key, value);
+    });
+    document.head.appendChild(node);
+  }
+  return node;
+}
+
+function setNamedMeta(name, content) {
+  const node = ensureMeta(`meta[name="${name}"]`, { name });
+  node.setAttribute("content", content);
+}
+
+function setPropertyMeta(property, content) {
+  const node = ensureMeta(`meta[property="${property}"]`, { property });
+  node.setAttribute("content", content);
+}
+
+function setCanonical(url) {
+  let node = document.head.querySelector('link[rel="canonical"]');
+  if (!node) {
+    node = document.createElement("link");
+    node.setAttribute("rel", "canonical");
+    document.head.appendChild(node);
+  }
+  node.setAttribute("href", url);
+}
+
+function updateProjectMeta(project) {
+  const title = `${project.title} - 陈镔睿作品集`;
+  const description = getProjectDescription(project);
+  const image = new URL(getProjectThumbnail(project), window.location.origin).href;
+  const canonical = new URL(buildProjectPath(project.slug), window.location.origin).href;
+
+  document.title = title;
+  setNamedMeta("description", description);
+  setNamedMeta("twitter:card", "summary_large_image");
+  setPropertyMeta("og:title", title);
+  setPropertyMeta("og:description", description);
+  setPropertyMeta("og:type", "article");
+  setPropertyMeta("og:image", image);
+  setPropertyMeta("og:url", canonical);
+  setCanonical(canonical);
 }
 
 async function hydrateProjectHeroVideo(root, project) {
@@ -1323,16 +2027,89 @@ async function renderProjectPage() {
 
   const project = getProject(getCurrentProjectSlug());
   const nextProject = getNextProject(project.slug);
-  const hasCaseUrl = project.caseUrl && project.caseUrl !== "#";
-  const caseLinkMarkup = hasCaseUrl
-    ? `<a class="project-link" href="${project.caseUrl}" target="_blank" rel="noopener noreferrer">see the case</a>`
+  const actionLinksMarkup = getProjectActionLinks(project);
+  const projectFrames = hasProjectMaterials(project) && Array.isArray(project.frames) && project.frames.length
+    ? project.frames
+    : [getProjectThumbnail(project)].filter(Boolean);
+  const factsMarkup = `
+    <ul class="project-facts" aria-label="Project facts">
+      ${getProjectFacts(project).map((fact) => `
+        <li>
+          <span>${fact.label}</span>
+          <strong>${fact.value}</strong>
+        </li>
+      `).join("")}
+    </ul>
+  `;
+  const statusMarkup = getProjectStatusMarkup(project);
+  const boardsMarkup = Array.isArray(project.boards) && project.boards.length
+    ? `
+      <section class="project-boards" id="project-works" aria-label="Project boards">
+        <div class="project-section-head">
+          <p class="project-report-kicker">Works</p>
+          <h2>作品展示</h2>
+        </div>
+        ${project.boards.map((board) => `
+          <figure class="project-board">
+            <img src="${board.src}" alt="${board.alt || project.title}">
+          </figure>
+        `).join("")}
+      </section>
+    `
     : "";
+  const reportPagesMarkup = Array.isArray(project.reportPages) && project.reportPages.length
+    ? project.reportPages.map((src, index) => `
+      <figure class="project-report-page${index >= 8 ? " is-extra" : ""}">
+        <img
+          src="${src}"
+          alt="${project.title} 设计报告第 ${index + 1} 页"
+          loading="${index < 2 ? "eager" : "lazy"}"
+          decoding="async"
+        >
+        <figcaption>${String(index + 1).padStart(2, "0")}</figcaption>
+      </figure>
+    `).join("")
+    : "";
+  const reportMarkup = reportPagesMarkup
+    ? `
+      <section class="project-report" id="project-report" aria-label="Report preview">
+        <div class="project-report-head">
+          <div>
+            <p class="project-report-kicker">Report</p>
+            <h2>${project.reportLabel || "Report preview"}</h2>
+          </div>
+          <span class="project-report-count">${project.reportPages.length} pages</span>
+        </div>
+        <div class="project-report-tools" aria-label="Report navigation">
+          ${Array.isArray(project.boards) && project.boards.length ? `<a href="#project-works">只看展板</a>` : ""}
+          ${project.reportPages.length > 8 ? `<button type="button" data-report-toggle aria-expanded="false">展开完整报告</button>` : ""}
+          <a href="#project-top">返回顶部</a>
+        </div>
+        ${project.reportPages.length > 8 ? `<p class="project-report-note">默认显示前 8 页，展开后可连续查看完整报告页面。</p>` : ""}
+        <div class="project-report-pages">
+          ${reportPagesMarkup}
+        </div>
+      </section>
+    `
+    : `
+      <section class="project-report project-report-empty" id="project-report" aria-label="Report placeholder">
+        <div class="project-report-head">
+          <div>
+            <p class="project-report-kicker">Report</p>
+            <h2>设计报告待接入</h2>
+          </div>
+        </div>
+        <div class="project-empty-panel">
+          <p>后续提供设计报告素材后，会在这里展示完整报告页面预览。</p>
+        </div>
+      </section>
+  `;
 
-  document.title = `${project.title} - Portfolio Study`;
+  updateProjectMeta(project);
 
   root.innerHTML = `
-    <article class="project-card">
-      <a class="project-close" href="./" aria-label="Back to home">
+    <article class="project-card" id="project-top">
+      <a class="project-close" href="${resolveSitePath("")}" aria-label="Back to home">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M7 7l10 10"></path>
           <path d="M17 7L7 17"></path>
@@ -1344,25 +2121,40 @@ async function renderProjectPage() {
       </div>
 
       <section class="project-info">
-        <h1>${project.title}</h1>
+        <div>
+          <p class="project-kicker">${project.kicker || project.year}</p>
+          <h1>${project.title}</h1>
+        </div>
         <div class="project-copy">
-          <p>${project.description}</p>
-          ${caseLinkMarkup}
+          <p>${getProjectDescription(project)}</p>
+          ${factsMarkup}
+          ${statusMarkup}
+          <div class="project-actions">
+            ${actionLinksMarkup}
+          </div>
         </div>
       </section>
 
-      <section class="project-frames">
-        ${project.frames.map((frame, index) => `
+      ${boardsMarkup || `
+      <section class="project-frames" id="project-preview">
+        <div class="project-section-head">
+          <p class="project-report-kicker">Preview</p>
+          <h2>现有预览图</h2>
+        </div>
+        ${projectFrames.map((frame, index) => `
           <div class="project-frame">
             <img src="${frame}" alt="${project.title} frame ${index + 1}">
           </div>
         `).join("")}
       </section>
+      `}
+
+      ${reportMarkup}
     </article>
 
     <section class="project-next">
       <div class="project-next-inner">
-        <a class="project-next-back" href="./">back to home</a>
+        <a class="project-next-back" href="${resolveSitePath("")}">back to home</a>
 
         <a class="project-next-figure" href="${buildProjectPath(nextProject.slug)}">
           <img src="${getProjectThumbnail(nextProject)}" alt="${nextProject.title}">
@@ -1374,6 +2166,14 @@ async function renderProjectPage() {
       </div>
     </section>
   `;
+
+  const reportToggle = root.querySelector("[data-report-toggle]");
+  reportToggle?.addEventListener("click", () => {
+    const report = root.querySelector("#project-report");
+    const expanded = report?.classList.toggle("is-expanded") || false;
+    reportToggle.setAttribute("aria-expanded", String(expanded));
+    reportToggle.textContent = expanded ? "收起报告" : "展开完整报告";
+  });
 
   await hydrateProjectHeroVideo(root, project);
 }
@@ -1396,3 +2196,8 @@ async function init() {
 }
 
 void init();
+
+
+
+
+

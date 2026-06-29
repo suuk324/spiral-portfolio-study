@@ -3,9 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About - Portfolio Study</title>
-  <meta name="description" content="About page study based on a cinematic motion-portfolio structure.">
-  <link rel="stylesheet" href="styles.css">
+  <title>About - Chen Binrui Portfolio</title>
+  <meta name="description" content="陈镔睿个人主页，产品设计方向创作者，关注产品、交互与视觉表达。">
+  <meta property="og:title" content="陈镔睿 - 个人主页">
+  <meta property="og:description" content="产品设计 / 交互设计 / 视觉表达 / AI 辅助设计">
+  <meta property="og:type" content="profile">
+  <meta property="og:image" content="/assets/profile/portrait-cutout.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/styles.css?v=20260629-pages-gh1">
 </head>
 <body class="page-about">
   <div class="site-shell">
@@ -36,19 +41,18 @@
           </button>
 
           <nav class="menu-nav" aria-label="Primary">
-            <a href="./">works</a>
-            <a href="about.html">about</a>
-            <a href="mailto:pertantpacome@gmail.com">contact</a>
+            <a href="/">works</a>
+            <a href="/about/">about</a>
+            <a href="mailto:3156686289@qq.com">contact</a>
           </nav>
 
           <div class="menu-footer">
-            <a class="menu-mail" href="mailto:pertantpacome@gmail.com">pertantpacome@gmail.com</a>
+            <a class="menu-mail" href="mailto:3156686289@qq.com">3156686289@qq.com</a>
 
             <div class="menu-socials" aria-label="Social links">
-              <a href="https://www.x.com/pacomepertant" target="_blank" rel="noopener noreferrer" aria-label="X / Twitter">x</a>
-              <a href="https://www.behance.net/pacomepertant" target="_blank" rel="noopener noreferrer" aria-label="Behance">be</a>
-              <a href="https://www.linkedin.com/in/pac%C3%B4me-pertant-b4437126b/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">in</a>
-              <a href="https://www.instagram.com/pacomepertant" target="_blank" rel="noopener noreferrer" aria-label="Instagram">ig</a>
+              <a href="https://github.com/suuk324" target="_blank" rel="noopener noreferrer" aria-label="GitHub">gh</a>
+              <span class="menu-social-chip" title="小红书: a15706750107">red</span>
+              <span class="menu-social-chip" title="Bilibili: 阿呆呆呢">bili</span>
             </div>
           </div>
         </aside>
@@ -56,14 +60,41 @@
     </header>
 
     <main class="about-page">
-      <section class="about-copy">
-        <div class="about-copy-sticky">
-          <p>
-            I'm Pacome Pertant, a motion and sound designer based in Paris. From
-            2D to 3D, I shape images and sound into emotional experiences,
-            sometimes clean, sometimes experimental, always chasing the right
-            visual narrative.
+      <section class="about-profile">
+        <figure class="about-profile-media">
+          <img src="/assets/profile/portrait-cutout.png" alt="陈镔睿个人照">
+        </figure>
+
+        <div class="about-profile-copy">
+          <p class="about-profile-kicker">Personal Profile</p>
+          <h1>陈镔睿</h1>
+          <p class="about-profile-lede">
+            产品设计方向的创作者，关注产品、交互与视觉表达之间的关系。
           </p>
+
+          <div class="about-profile-section">
+            <h2>关于我</h2>
+            <p>
+              我是陈镔睿，一名产品设计方向的创作者。关注产品、交互与视觉表达之间的关系，喜欢把想法从概念推进到可被体验的完整作品。我的作品涵盖产品设计、界面设计、数字工具与视觉实验，追求清晰、克制且具有记忆点的设计表达。
+            </p>
+          </div>
+
+          <div class="about-profile-section">
+            <h2>个人定位</h2>
+            <p>产品设计 / 交互设计 / 视觉表达 / AI 辅助设计</p>
+          </div>
+
+          <ul class="about-profile-facts">
+            <li><span>方向</span><strong>产品设计</strong></li>
+            <li><span>学校</span><strong>浙江科技大学</strong></li>
+            <li><span>城市</span><strong>浙江 杭州</strong></li>
+            <li><span>邮箱</span><strong>3156686289@qq.com</strong></li>
+          </ul>
+
+          <div class="about-profile-section">
+            <h2>技能</h2>
+            <p>Rhino 建模 / KeyShot 渲染动画 / UI/UX 设计 / Agent 网页与软件设计 / AI 辅助创作</p>
+          </div>
         </div>
       </section>
 
@@ -75,22 +106,6 @@
       <section class="about-socials"></section>
     </main>
 
-    <a class="showreel-card" href="https://www.behance.net/gallery/202093435/Showreel-2024" target="_blank" rel="noopener noreferrer" aria-label="Open showreel">
-      <div class="showreel-frame">
-        <img src="assets/reference/showreel-cover.png" alt="Showreel cover">
-      </div>
-      <svg class="showreel-marquee" viewBox="0 0 320 210" aria-hidden="true">
-        <defs>
-          <path id="showreel-path-about" d="M30 189h228c20 0 34-15 34-34V39c0-19-14-34-34-34H30C11 5-3 20-3 39v116c0 19 14 34 33 34Z"></path>
-        </defs>
-        <text>
-          <textPath href="#showreel-path-about" startOffset="0%">
-            showreel / 2025 / showreel / 2025 / showreel / 2025 /
-          </textPath>
-        </text>
-      </svg>
-    </a>
-
     <button class="sound-button" id="sound-button" type="button" aria-pressed="false" aria-label="Toggle sound">
       <span class="sound-background"></span>
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -101,6 +116,18 @@
     </button>
   </div>
 
-  <script type="module" src="app.js"></script>
+  <script type="module" src="/app.js?v=20260629-pages-gh1"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+

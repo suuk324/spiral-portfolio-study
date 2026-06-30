@@ -256,8 +256,8 @@ function getMuxPosterUrl(playbackId, width = 1280, height = 720, time = 0) {
 }
 
 const siteProfile = {
-  email: "3156686289@qq.com",
-  contactLabel: "3156686289@qq.com",
+  email: "3156686189@qq.com",
+  contactLabel: "3156686189@qq.com",
   showreelUrl: resolveSitePath("about/"),
   showreelPlaybackId: "ycc6bXk6hOWxGnyb6F3wvUxPPLiDML00P9OPkYMjuSN8",
   showreelCover: resolveSiteUrl("assets/reference/showreel-cover.png"),
